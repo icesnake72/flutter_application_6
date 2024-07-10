@@ -10,7 +10,8 @@ class MyAppBar extends AppBar {
     required String title,
     required List<Icon> actions,
     required Icon leading,
-    required Function(Map<String, dynamic>) onSaveData,
+    required Function() loginWithGoogle,
+    required Function(Map<String, dynamic>) onSaveData,    
     required Map<String, dynamic> data,
   }) : super(
     backgroundColor: Colors.black,
@@ -38,7 +39,10 @@ class MyAppBar extends AppBar {
               IconButton(
                 icon: actions[0], //Icon(Icons.tv), 
                 color: Colors.white,
-                onPressed: (){},
+                onPressed: (){
+                  var user = loginWithGoogle();
+                  print(user.toString());
+                },
               ),
               const SizedBox(width: 4),
               IconButton(
@@ -50,7 +54,7 @@ class MyAppBar extends AppBar {
               IconButton(
                 icon: actions[2], 
                 color: Colors.white,
-                onPressed: (){},
+                onPressed: (){onSaveData(data);},
               ),
             ],
           ),

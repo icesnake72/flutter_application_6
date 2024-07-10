@@ -24,6 +24,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="flutter_application_6">
+  <meta name="google-signin-client_id" content="98826649118-dlm39bi355d8ifkme2qbvb4iaml1ufls.apps.googleusercontent.com" />
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -32,7 +33,39 @@
   <title>flutter_application_6</title>
   <link rel="manifest" href="manifest.json">
 </head>
-<body>
+<body onload="initGapi()">
   <script src="flutter_bootstrap.js" async></script>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQlEmzAh1i1t_fH8W9AgBzVP4Awo_OKUE",
+      authDomain: "django-social-auth-379908.firebaseapp.com",
+      projectId: "django-social-auth-379908",
+      storageBucket: "django-social-auth-379908.appspot.com",
+      messagingSenderId: "98826649118",
+      appId: "1:98826649118:web:48ab2cf23620914bedb80f",
+      measurementId: "G-P7V2XY18CB"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+  <script>
+    function initGapi() {
+      gapi.load('auth2', function() {
+        gapi.auth2.init({
+          client_id: '98826649118-dlm39bi355d8ifkme2qbvb4iaml1ufls.apps.googleusercontent.com',  // Google Cloud에서 생성한 OAuth 2.0 클라이언트 ID
+        });
+      });
+    }
+  </script>
 </body>
 </html>

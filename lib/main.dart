@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_6/button_horiz_rail.dart';
 import 'package:flutter_application_6/video_card.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'board_input_page.dart';
-import 'firebase_options.dart';
 import 'my_appbar.dart';
 import 'board.dart';
 import 'package:http/http.dart' as http;
@@ -12,12 +10,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app_constant.dart';
 
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+// import 'src/sign_in_button.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();  // 플러그인 초기화를 위해 필요
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Ideal time to initialize
+  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+
+  FirebaseAuth.instance
+  .authStateChanges()
+  .listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+
+  // User user = FirebaseAuth.instance.currentUser!;
 
   runApp(const MyApp());
 }
@@ -49,8 +68,32 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage>{  
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   late Future<List<BoardDTO>>? futureBoards = null;
   String baseUrl = '';
+
+  Future<User?> _signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return null; // 사용자가 로그인 프로세스를 취소했을 경우
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 
 
   @override
@@ -129,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage>{
           Icon(Icons.notifications),
           Icon(Icons.search),
         ],     
+        loginWithGoogle: _signInWithGoogle,
         onSaveData: _saveData,   
         data: {'baseUrl': baseUrl},
       ),      

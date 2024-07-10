@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "98826649118",
+    "project_id": "django-social-auth-379908",
+    "storage_bucket": "django-social-auth-379908.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98826649118:android:b099900719ff74b4edb80f",
+        "android_client_info": {
+          "package_name": "com.example.flutte"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98826649118-dlm39bi355d8ifkme2qbvb4iaml1ufls.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKewzYT-ZQExVsNNyeaq2ChZ_ar-BkcAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98826649118-1i4ghh2fgune3mvi46pddqj1pbfp21fu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

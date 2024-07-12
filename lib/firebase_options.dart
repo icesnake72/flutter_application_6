@@ -87,4 +87,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'django-social-auth-379908.appspot.com',
     measurementId: 'G-4NRJCV2F1J',
   );
+
 }

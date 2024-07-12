@@ -8,12 +8,15 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_constant.dart';
-
+import 'package:provider/provider.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+
 import 'package:google_sign_in/google_sign_in.dart';
+
 // import 'src/sign_in_button.dart';
 
 void main() async {
@@ -24,7 +27,7 @@ void main() async {
   );
 
   // Ideal time to initialize
-  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
 
   FirebaseAuth.instance
   .authStateChanges()
@@ -74,7 +77,13 @@ class _MyHomePageState extends State<MyHomePage>{
   late Future<List<BoardDTO>>? futureBoards = null;
   String baseUrl = '';
 
+  bool _loggedIn = false;
+  bool get loggedIn => _loggedIn;
+
+  
+
   Future<User?> _signInWithGoogle() async {
+    // Trigger the Google Sign In process
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -88,6 +97,9 @@ class _MyHomePageState extends State<MyHomePage>{
       );
 
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Welcome ${userCredential.user!.displayName}, ${userCredential.user!.email}')),
+      );
       return userCredential.user;
     } catch (e) {
       print(e);
@@ -100,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage>{
   void initState() {
     super.initState();    
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _loadData();
+      await _loadData();  // SharedPreferences에서 baseUrl을 불러온걸 보장한 뒤 fetchBoards를 호출한다.
       setState(() {
         futureBoards = fetchBoards();
       });
@@ -110,6 +122,24 @@ class _MyHomePageState extends State<MyHomePage>{
       );
     });
   }
+
+  // Future<void> init() async {
+  //   await Firebase.initializeApp(
+  //       options: DefaultFirebaseOptions.currentPlatform);
+
+  //   FirebaseUIAuth.configureProviders([
+  //     EmailAuthProvider(),
+  //   ]);
+
+  //   FirebaseAuth.instance.userChanges().listen((user) {
+  //     if (user != null) {
+  //       _loggedIn = true;
+  //     } else {
+  //       _loggedIn = false;
+  //     }
+  //     notifyListeners();
+  //   });
+  // }
 
   // Future<void> onloaded(Duration timeStamp) async {
   //   await _loadData();
@@ -153,12 +183,12 @@ class _MyHomePageState extends State<MyHomePage>{
   Future<void> _loadData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      // Shared Preferences에서 baseUrl을 불러오는데 실패할 경우 기본값을 사용한다.
       baseUrl = prefs.getString(AppConstants.baseUrlKey) ?? AppConstants.baseUrlDefault;
     } catch (e) {
       baseUrl = AppConstants.baseUrlDefault;
       print('Error: $e');
     }
-    
   }
   
   @override
@@ -245,11 +275,13 @@ class _MyHomePageState extends State<MyHomePage>{
                 );
                 
                 print('result: $result');
+                // 업로드 결과가 성공적으로 이루어 졌다면...
                 if (result == true) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('게시글이 성공적으로 업로드되었습니다.')),
                   );
                   
+                  // 게시글 목록을 다시 불러온다.
                   setState(() {                    
                     futureBoards = fetchBoards();                    
                   });

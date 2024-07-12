@@ -9,6 +9,8 @@ import 'dart:io';
 class BoardInputPage extends StatefulWidget {
   final String userId;
   final String baseUrl;
+
+  // 생성자를 통해 무조건 userId와 baseUrl을 전달받음
   const BoardInputPage({super.key, required this.userId, required this.baseUrl});
 
   @override
@@ -27,7 +29,9 @@ class _BoardInputPageState extends State<BoardInputPage> {
   // XFile은 iOS, Android, 웹, 데스크탑 등 다양한 플랫폼에서 일관된 방식으로 파일을 다룰 수 있게 한다.
   // XFile을 통해 파일을 읽고 쓸 수 있으며, 파일의 메타데이터에 접근할 수 있다.  
   List<XFile?> _images = List<XFile?>.filled(3, null);
-  List<Uint8List?> _webImages = List<Uint8List?>.filled(3, null);
+
+  // 웹에서 이미지를 선택할 때 사용할 Uint8List(바이트 스트림) 리스트
+  List<Uint8List?> _webImages = List<Uint8List?>.filled(3, null); 
 
   // 이미지를 선택하거나 촬영하기 위해 ImagePicker 인스턴스를 생성
   final ImagePicker _picker = ImagePicker();
@@ -44,7 +48,7 @@ class _BoardInputPageState extends State<BoardInputPage> {
 
       }
 
-      if (kIsWeb) {
+      if (kIsWeb) { // 현재 실행환경이 웹 베이스드에서 실행이 되고 있는지 여부를 확인
         await _pickImageWeb(index);
         return;
       }
@@ -108,6 +112,7 @@ class _BoardInputPageState extends State<BoardInputPage> {
   // 이미지 촬영 기능, iOS와 Android에서만 지원
   // ImagePicker를 사용하여 이미지를 촬영하고, 촬영한 이미지를 _images 리스트에 추가
   Future<void> _takePhoto(int index) async {
+    // 웹 실행환경인지 체크를 하고 지원하지 않음을 알림
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -145,9 +150,10 @@ class _BoardInputPageState extends State<BoardInputPage> {
       var request = http.MultipartRequest('POST', Uri.parse(url));
       request.fields['title'] = _titleController.text;
       request.fields['text'] = _textController.text;
-      request.fields['userId'] = '1';  // Replace with actual userId
+      request.fields['userId'] = '1';  // 추후에 생성자로부터 받은 userId로 변경해야 함
 
       if (kIsWeb) {
+        // 웹에서 이미지를 업로드할 때는 바이트 스트림으로 변환하여 전송
         int i = 0;
         for (var image in _webImages) {
           if (image != null) {
@@ -252,11 +258,11 @@ class _BoardInputPageState extends State<BoardInputPage> {
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: (kIsWeb)?
-                            (_webImages[index] != null) ?
+                          child: (kIsWeb)?  // 현재 실행환경이 웹 베이스드에서 실행이 되고 있는지 여부를 확인
+                            (_webImages[index] != null) ? // 이미지 데이터 로딩이 되어 있는지 여부 확인
                             Stack(
                               children: [
-                                Image.memory(
+                                Image.memory( // 바이트 스트림으로 이미지를 로딩
                                   _webImages[index]!,
                                   width: 100,
                                   height: 100,
